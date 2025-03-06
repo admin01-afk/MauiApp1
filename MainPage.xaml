@@ -1,0 +1,31 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="MauiApp1.MainPage">
+
+    <ScrollView>
+        <VerticalStackLayout>
+            <HorizontalStackLayout>
+                <Label Text="Console: "/>
+                <Label x:Name="console"/>
+                <ProgressBar x:Name="progressbar"/>
+            </HorizontalStackLayout>
+        
+            <VerticalStackLayout
+                Padding="10,0"
+                Spacing="15">
+                <HorizontalStackLayout Spacing="50" HorizontalOptions="Start">
+                    <Label Text="Duyurular:"/>
+                    <Button Text="Collapse" Clicked="Collapse_btn_Clicked"/>
+                </HorizontalStackLayout>
+                <VerticalStackLayout
+                    x:Name="list"
+                    Padding="10,0"
+                    Spacing="15">
+                </VerticalStackLayout>
+            </VerticalStackLayout>
+        </VerticalStackLayout>
+
+    </ScrollView>
+
+</ContentPage>
