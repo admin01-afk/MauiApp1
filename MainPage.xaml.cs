@@ -19,7 +19,11 @@ namespace MauiApp1 {
 
         async Task GetData(string url)
         {
-            console.Text = "Fetching data...";
+            MainThread.BeginInvokeOnMainThread(() => {
+                console.Text = "Fetching data...";
+                progressbar.IsVisible = true;
+                progressbar.Progress = 0.01;
+            });
             try {
                 // FirefoxOptions for headless operation and optional image disabling for faster loading
                 FirefoxOptions options = new FirefoxOptions();
@@ -48,10 +52,22 @@ namespace MauiApp1 {
                     string text = $"Duyuru{i}: " + div.FindElement(By.XPath("div[1]/div/h3/a")).Text + "\n";
                     CreateElement(text);
                     i++;
+                    double progressValue = (double)i / 10;
+                    MainThread.BeginInvokeOnMainThread(() => {
+                        console.Text = $"Data-{i} Fetched";
+                        progressbar.ProgressTo(progressValue,200,Easing.Default);
+                    });
                 }
+                MainThread.BeginInvokeOnMainThread(() => {
+                    console.Text = "";
+                    progressbar.Progress = 0;
+                    progressbar.IsVisible = false;
+                });
                 driver.Quit();  // Ensure the driver quits after operation
             } catch (Exception ex) {
-                
+                MainThread.BeginInvokeOnMainThread(() => {
+                    console.Text = ex.Message;
+                });
             }
         }
 
@@ -94,6 +110,7 @@ namespace MauiApp1 {
         private void Collapse_btn_Clicked(object sender, EventArgs e)
         {
             list.IsVisible = !list.IsVisible;
+            btn.Text = (btn.Text == "<") ? ">" : "<";
         }
     }
 }
