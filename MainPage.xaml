@@ -25,7 +25,7 @@
                     <Label Text="MF Duyurular:" VerticalOptions="Center"/>
                     <Button x:Name="mf_collapse_btn" Text=">" Clicked="Collapse_btn_Clicked" ClassId="MF"/>
                 </HorizontalStackLayout>
-                <VerticalStackLayout
+                <VerticalStackLayout ClassId="MF"
                     x:Name="MF_list"
                     Padding="10,0"
                     Spacing="15">
@@ -39,7 +39,7 @@
                     <Label Text="Matse Duyurular:" VerticalOptions="Center"/>
                     <Button x:Name="matse_collapse_btn" Text=">" Clicked="Collapse_btn_Clicked" ClassId="Matse"/>
                 </HorizontalStackLayout>
-                <VerticalStackLayout
+                <VerticalStackLayout ClassId="Matse"
                     x:Name="Matse_list"
                     Padding="10,0"
                     Spacing="15">
