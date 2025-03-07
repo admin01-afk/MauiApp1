@@ -5,6 +5,7 @@ using OpenQA.Selenium.Firefox;
 using OpenQA.Selenium.Support.UI;
 using Microsoft.Maui.Dispatching;
 using System.Diagnostics;
+using Microsoft.Maui;
 
 namespace MauiApp1 {
     public partial class MainPage : ContentPage {
@@ -102,13 +103,25 @@ namespace MauiApp1 {
         private void Button_Clicked(object sender, EventArgs e)
         {
             string url = "";
-            if(sender is Button btn) {
-                url = (btn.Parent.ClassId == "MF") ? "https://mf.eskisehir.edu.tr/tr/Duyuru" : "https://matse.eskisehir.edu.tr/tr/Duyuru";
+            string text = "";
+            if (sender is Button btn) {
+                HorizontalStackLayout list = (HorizontalStackLayout)btn.Parent;
+                foreach (var child in list.Children) {
+                    {
+                        if (child is Label label) {
+                            text = label.Text;
+                        }
+                    }
+                    url = (btn.Parent.ClassId == "MF") ? //programming war crime
+                            "https://mf.eskisehir.edu.tr/tr/Duyuru/Detay/" + text.Substring(9).Replace(" ", "-").ToLower().Replace("ö","o").Replace("ı","i").Replace("ş","s").Replace("ü","u").Replace("ğ","g") :
+                            "https://matse.eskisehir.edu.tr/tr/Duyuru/Detay/" + text.Substring(9).Replace(" ", "-").ToLower().Replace("ö","o").Replace("ı", "i").Replace("ş","s").Replace("ü", "u").Replace("ğ", "g");
+                }
+                OpenLink(url);
             }
-            OpenLink(url);
         }
         private async void OpenLink(string url)
         {
+            console.Text = url;
             if (await Launcher.CanOpenAsync(url)) {
                 await Launcher.OpenAsync(url);
             }
