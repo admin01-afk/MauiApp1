@@ -22,15 +22,31 @@
                 Padding="10,0"
                 Spacing="15">
                 <HorizontalStackLayout Spacing="50" HorizontalOptions="Start">
-                    <Label Text="Duyurular:" VerticalOptions="Center"/>
-                    <Button x:Name="btn" Text=">" Clicked="Collapse_btn_Clicked"/>
+                    <Label Text="MF Duyurular:" VerticalOptions="Center"/>
+                    <Button x:Name="mf_collapse_btn" Text=">" Clicked="Collapse_btn_Clicked" ClassId="MF"/>
                 </HorizontalStackLayout>
                 <VerticalStackLayout
-                    x:Name="list"
+                    x:Name="MF_list"
                     Padding="10,0"
                     Spacing="15">
                 </VerticalStackLayout>
             </VerticalStackLayout>
+
+            <VerticalStackLayout
+                Padding="10,0"
+                Spacing="15">
+                <HorizontalStackLayout Spacing="50" HorizontalOptions="Start">
+                    <Label Text="Matse Duyurular:" VerticalOptions="Center"/>
+                    <Button x:Name="matse_collapse_btn" Text=">" Clicked="Collapse_btn_Clicked" ClassId="Matse"/>
+                </HorizontalStackLayout>
+                <VerticalStackLayout
+                    x:Name="Matse_list"
+                    Padding="10,0"
+                    Spacing="15">
+                </VerticalStackLayout>
+            </VerticalStackLayout>
+
+
         </VerticalStackLayout>
 
     </ScrollView>

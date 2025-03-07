@@ -10,14 +10,18 @@ namespace MauiApp1 {
     public partial class MainPage : ContentPage {
         public MainPage()
         {
+            //https://matse.eskisehir.edu.tr/tr/Duyuru
             InitializeComponent();
 
             Task.Run(async () => {
-                GetData("https://mf.eskisehir.edu.tr/tr/Duyuru");
+                GetMFData("https://mf.eskisehir.edu.tr/tr/Duyuru");
+            });
+            Task.Run(async () => {
+                GetMatseData("https://matse.eskisehir.edu.tr/tr/Duyuru");
             });
         }
 
-        async Task GetData(string url)
+        async Task GetMFData(string url)
         {
             MainThread.BeginInvokeOnMainThread(() => {
                 console.Text = "Fetching data...";
@@ -48,9 +52,9 @@ namespace MauiApp1 {
                 IWebElement parentDiv = wait.Until(d => d.FindElement(By.XPath("/html/body/div[5]/div/div[2]/div/div/div/div/div[2]/div/div/div[1]")));
                 IReadOnlyCollection<IWebElement> divsInsideParent = parentDiv.FindElements(By.XPath(".//div[contains(@class, 'gdlr-core-blog-full-frame gdlr-core-skin-e-background')]"));
                 int i = 0;
-                foreach (IWebElement div in divsInsideParent){
+                foreach (IWebElement div in divsInsideParent){//div[1]/div[2]/div[1]/div/h3/a
                     string text = $"Duyuru{i}: " + div.FindElement(By.XPath("div[1]/div/h3/a")).Text + "\n";
-                    CreateElement(text);
+                    CreateElement(text,MF_list);
                     i++;
                     double progressValue = (double)i / 10;
                     MainThread.BeginInvokeOnMainThread(() => {
@@ -71,7 +75,59 @@ namespace MauiApp1 {
             }
         }
 
-        public HorizontalStackLayout CreateElement(string text)
+        async Task GetMatseData(string url)
+        {
+            MainThread.BeginInvokeOnMainThread(() => {
+                console.Text = "Fetching data...";
+                progressbar.IsVisible = true;
+                progressbar.Progress = 0.01;
+            });
+            try {
+                FirefoxOptions options = new FirefoxOptions();
+                options.AddArgument("--headless");
+                options.AddArgument("--disable-images");
+
+                FirefoxDriverService driverService = FirefoxDriverService.CreateDefaultService();
+                driverService.HideCommandPromptWindow = true;
+
+                using IWebDriver driver = new FirefoxDriver(driverService, options);
+                driver.Navigate().GoToUrl(url);
+
+                WebDriverWait wait = new WebDriverWait(driver, TimeSpan.FromSeconds(10));
+
+                // Scroll the page to trigger more content loading (if necessary)
+                IJavaScriptExecutor js = (IJavaScriptExecutor)driver;
+                js.ExecuteScript("window.scrollTo(0, document.body.scrollHeight/2);");
+                await Task.Delay(3000);  // Wait a bit for content to load after scrolling
+
+                // Wait for the element to load using the provided XPath
+                IWebElement parentDiv = wait.Until(d => d.FindElement(By.XPath("/html/body/div[5]/div/div[2]/div/div/div/div/div[2]/div/div/div[1]")));
+                IReadOnlyCollection<IWebElement> divsInsideParent = parentDiv.FindElements(By.XPath(".//div[contains(@class, 'gdlr-core-blog-full-frame gdlr-core-skin-e-background')]"));
+                int i = 0;
+                foreach (IWebElement div in divsInsideParent) {
+                    string text = $"Duyuru{i}: " + div.FindElement(By.XPath("div[1]/div/h3/a")).Text + "\n";
+                    CreateElement(text, Matse_list);
+                    i++;
+                    double progressValue = (double)i / 10;
+                    MainThread.BeginInvokeOnMainThread(() => {
+                        console.Text = $"Data-{i} Fetched";
+                        progressbar.ProgressTo(progressValue, 200, Easing.Default);
+                    });
+                }
+                MainThread.BeginInvokeOnMainThread(() => {
+                    console.Text = "";
+                    progressbar.Progress = 0;
+                    progressbar.IsVisible = false;
+                });
+                driver.Quit();  // Ensure the driver quits after operation
+            } catch (Exception e) {
+                MainThread.BeginInvokeOnMainThread(() => {
+                    console.Text = e.Message;
+                });
+            }
+
+        }
+        public HorizontalStackLayout CreateElement(string text,VerticalStackLayout list)
         {
             HorizontalStackLayout element = new HorizontalStackLayout { 
                 Spacing=10,
@@ -109,8 +165,12 @@ namespace MauiApp1 {
 
         private void Collapse_btn_Clicked(object sender, EventArgs e)
         {
-            list.IsVisible = !list.IsVisible;
-            btn.Text = (btn.Text == "<") ? ">" : "<";
+            if(sender is Button button) {
+                button.Text = (button.Text == "<") ? ">" : "<";
+                VerticalStackLayout list = new VerticalStackLayout();
+                list = (button.ClassId == "MF") ? MF_list : Matse_list;
+                list.IsVisible = !list.IsVisible;
+            }
         }
     }
 }
